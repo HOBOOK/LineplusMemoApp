@@ -10,6 +10,7 @@ public class MainActivity extends AppCompatActivity
 	private RecyclerView recyclerView;
 	private RecyclerView.Adapter mAdapter;
 	private RecyclerView.LayoutManager layoutManager;
+	private String[] myDataset;
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -17,11 +18,15 @@ public class MainActivity extends AppCompatActivity
 		setContentView(R.layout.activity_main);
 		recyclerView = (RecyclerView)findViewById(R.id.note_list_recycler_view);
 		recyclerView.setHasFixedSize(true);
-
+		myDataset = getLocalData();
 		layoutManager = new LinearLayoutManager(this);
 		recyclerView.setLayoutManager(layoutManager);
-
 		mAdapter = new RecyclerViewAdapter(myDataset);
 		recyclerView.setAdapter(mAdapter);
+
+	}
+	private String[] getLocalData(){
+		String[] data = {"a","b"};
+		return data;
 	}
 }

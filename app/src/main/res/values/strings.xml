@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">LineplusMemo</string>
+    <string name="slot_note_title">제목</string>
+    <string name="slot_note_content">내용</string>
+    <string name="submit">제출</string>
+    <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

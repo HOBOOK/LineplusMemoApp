@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="?listPreferredItemHeight"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="80dp"
     android:layout_width="match_parent"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:weightSum="9"
-    android:paddingLeft="24dp"
-    android:paddingRight="24dp"
-    android:clickable="true"
-    android:focusable="true">
+    android:weightSum="7"
+    android:layout_marginLeft="24dp"
+    android:layout_marginRight="24dp"
+    android:background="@drawable/border_slot_note">
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginRight="80dp"
+        android:layout_weight="2"
         android:weightSum="1">
         <TextView
             android:id="@+id/TextView_Title"
@@ -32,19 +32,12 @@
             android:text="@string/slot_note_content">
         </TextView>
     </TableLayout>
-    <ImageView
+    <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/ImageView_Thumbnail"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginRight="30dp"
-        android:layout_gravity="center_vertical|end"
-        android:src="@drawable/ic_launcher_foreground">
-    </ImageView>
-    <ImageView
-        android:id="@+id/ImageView_Handle"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center_vertical|end"
-        android:src="@drawable/button_back_64x64"
-        />
-</FrameLayout>
+        android:layout_weight="5"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:layout_gravity="center_vertical|end">
+    </com.facebook.drawee.view.SimpleDraweeView>
+</LinearLayout>

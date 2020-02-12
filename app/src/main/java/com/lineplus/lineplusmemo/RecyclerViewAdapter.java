@@ -8,9 +8,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.lineplus.lineplusmemo.model.NoteData;
+
+import java.util.*;
+
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
 {
-	private String[] mDataset;
+	private ArrayList<NoteData> mDataset;
 	public class MyViewHolder extends RecyclerView.ViewHolder {
 		public TextView TextView_Title;
 		public TextView TextView_Content;
@@ -23,7 +27,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 		}
 	}
 
-	public RecyclerViewAdapter(String[] myDataset) {
+	public RecyclerViewAdapter(ArrayList<NoteData> myDataset) {
 		mDataset = myDataset;
 	}
 
@@ -39,13 +43,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 	@Override
 	public void onBindViewHolder(MyViewHolder holder, int position) {
 
-		holder.TextView_Title.setText(mDataset[position]);
-		holder.TextView_Content.setText(mDataset[position]);
+		holder.TextView_Title.setText(mDataset.get(0).getTitle());
+		holder.TextView_Content.setText(mDataset.get(0).getContent());
 
 	}
 
 	@Override
 	public int getItemCount() {
-		return mDataset.length;
+		return mDataset.size();
 	}
 }

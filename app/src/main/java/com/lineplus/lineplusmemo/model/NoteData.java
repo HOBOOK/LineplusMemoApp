@@ -16,7 +16,7 @@ public class NoteData implements Serializable
 		this.date = date;
 		this.title = title;
 		this.content = content;
-		this.imageURL = new ArrayList<String>(imageURL);
+		this.imageURL = imageURL;
 	}
 
 	public String getId()
@@ -66,7 +66,7 @@ public class NoteData implements Serializable
 
 	public void setImageURL(ArrayList<String> imageURL)
 	{
-		this.imageURL = new ArrayList<String>(imageURL);
+		this.imageURL = imageURL;
 	}
 
 

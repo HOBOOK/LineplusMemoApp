@@ -7,15 +7,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.lineplus.lineplusmemo.model.NoteData;
+import java.util.ArrayList;
 
-import java.util.*;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> implements ItemTouchHelperAdapter
 {
 	private ArrayList<NoteData> mDataset;
-	public class MyViewHolder extends RecyclerView.ViewHolder {
+	public class MyViewHolder extends RecyclerView.ViewHolder implements
+			ItemTouchHelperViewHolder {
 		public TextView TextView_Title;
 		public TextView TextView_Content;
 		public ImageView ImageView_Thumbnail;
@@ -42,14 +42,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 	@Override
 	public void onBindViewHolder(MyViewHolder holder, int position) {
-
-		holder.TextView_Title.setText(mDataset.get(0).getTitle());
-		holder.TextView_Content.setText(mDataset.get(0).getContent());
-
+		holder.TextView_Title.setText(mDataset.get(position).getTitle());
+		holder.TextView_Content.setText(mDataset.get(position).getContent());
 	}
 
 	@Override
 	public int getItemCount() {
 		return mDataset.size();
 	}
+
 }

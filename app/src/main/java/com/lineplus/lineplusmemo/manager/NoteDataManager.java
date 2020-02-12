@@ -18,7 +18,6 @@ public class NoteDataManager extends AppCompatActivity
 	{
 		if(instance == null){
 			instance = new NoteDataManager();
-			instance.loadNoteData();
 		}
 		return instance;
 	}
@@ -86,6 +85,8 @@ public class NoteDataManager extends AppCompatActivity
 				fos.write(obj.toString().getBytes());
 				fos.close();
 
+			}catch (FileNotFoundException e) {
+				e.printStackTrace();
 			}catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -97,49 +98,62 @@ public class NoteDataManager extends AppCompatActivity
 
 	public void loadNoteData()
 	{
-		// 내부저장소에서 데이터 불러오기
-		StringBuffer buffer = new StringBuffer();
-		String dataString = null;
-		FileInputStream fis = null;
-		try {
-			fis = openFileInput("data.txt");
-			BufferedReader iReader = new BufferedReader(new InputStreamReader((fis)));
-			dataString = iReader.readLine();
-			while(dataString != null)
-			{
-				buffer.append(dataString);
+		File file = new File("data.txt");
+		if(file.exists())
+		{
+			// 내부저장소에서 데이터 불러오기
+			StringBuffer buffer = new StringBuffer();
+			String dataString = null;
+			FileInputStream fis = null;
+			try {
+				fis = openFileInput("data.txt");
+				BufferedReader iReader = new BufferedReader(new InputStreamReader((fis)));
 				dataString = iReader.readLine();
-			}
-			buffer.append("\n");
-			iReader.close();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// String to JSON으로 만들어 노트배열에 담는다
-		try{
-			data.clear();
-			JSONObject json = new JSONObject(dataString);
-			JSONArray jArray = json.getJSONArray("notes");
-			for(int i = 0; i < jArray.length(); i++){
-				JSONObject jNoteObject = new JSONObject(jArray.getString(i));
-				NoteData note = new NoteData();
-				note.setId(jNoteObject.getString("id"));
-				note.setDate(jNoteObject.getString("date"));
-				note.setTitle(jNoteObject.getString("title"));
-
-				ArrayList<String> imageURLs = new ArrayList<String>();
-				JSONArray jNoteImageArray = jNoteObject.getJSONArray("image");
-				for(int j = 0; j < jNoteImageArray.length(); j++){
-					JSONObject jImageObject = new JSONObject(jNoteImageArray.getString(i));
-					imageURLs.add(jImageObject.getString(String.valueOf(j)));
+				while(dataString != null)
+				{
+					buffer.append(dataString);
+					dataString = iReader.readLine();
 				}
-				note.setImageURL(imageURLs);
-				data.add(note);
+				buffer.append("\n");
+				iReader.close();
+			}catch (FileNotFoundException e) {
+				e.printStackTrace();
 			}
-		}catch (JSONException e){
-			e.printStackTrace();
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			// String to JSON으로 만들어 노트배열에 담는다
+			try{
+				data.clear();
+				JSONObject json = new JSONObject(dataString);
+				JSONArray jArray = json.getJSONArray("notes");
+				for(int i = 0; i < jArray.length(); i++){
+					JSONObject jNoteObject = new JSONObject(jArray.getString(i));
+					NoteData note = new NoteData();
+					note.setId(jNoteObject.getString("id"));
+					note.setDate(jNoteObject.getString("date"));
+					note.setTitle(jNoteObject.getString("title"));
+
+					ArrayList<String> imageURLs = new ArrayList<String>();
+					JSONArray jNoteImageArray = jNoteObject.getJSONArray("image");
+					for(int j = 0; j < jNoteImageArray.length(); j++){
+						JSONObject jImageObject = new JSONObject(jNoteImageArray.getString(i));
+						imageURLs.add(jImageObject.getString(String.valueOf(j)));
+					}
+					note.setImageURL(imageURLs);
+					data.add(note);
+				}
+			}catch (JSONException e){
+				e.printStackTrace();
+			}
 		}
+
+		//TEST
+		ArrayList<String> imageURL = new ArrayList<>();
+		data.clear();
+		data.add(new NoteData("0","2020-02-12","테스트1","테스트내용",imageURL));
+		data.add(new NoteData("1","2020-02-13","테스트2","테스트내용2",imageURL));
+		data.add(new NoteData("2","2020-02-14","테스트3","테스트내용3",imageURL));
 	}
 }

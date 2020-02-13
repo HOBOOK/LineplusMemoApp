@@ -14,7 +14,9 @@
         app:layout_constraintTop_toTopOf="parent"
         android:background="#ffffff"
         android:textSize="30sp"
-        android:text="메모"
+        android:text="@string/title_note"
+        android:layout_marginStart="12dp"
+        android:textColor="@color/colorMain"
         android:textStyle="bold"
         android:gravity="center_vertical">
     </TextView>
@@ -36,7 +38,7 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:backgroundTint="#F5F5F5"
-        android:tint="#EAC833"
+        android:tint="@color/colorMain"
         android:contentDescription="@string/submit"
         android:src="@drawable/button_edit_128x128"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -27,6 +27,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="@string/activity_main"
+            android:textColor="@color/colorMain"
             android:textSize="24sp"/>
     </android.support.v7.widget.Toolbar>
 

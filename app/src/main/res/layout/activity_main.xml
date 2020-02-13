@@ -7,12 +7,26 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/text_main"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#ffffff"
+        android:textSize="30sp"
+        android:text="메모"
+        android:textStyle="bold"
+        android:gravity="center_vertical">
+    </TextView>
+
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/note_list_recycler_view"
+        android:id="@+id/recycler_view_list_note"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="70dp"
         android:background="#ffffff"
-        android:scrollbars="vertical">
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/text_main">
     </android.support.v7.widget.RecyclerView>
 
     <android.support.design.widget.FloatingActionButton
@@ -21,8 +35,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
+        android:backgroundTint="#F5F5F5"
+        android:tint="#EAC833"
         android:contentDescription="@string/submit"
-        android:src="@drawable/ic_launcher_foreground"
+        android:src="@drawable/button_edit_128x128"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

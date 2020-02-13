@@ -34,7 +34,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,15 +62,36 @@
 
     <LinearLayout
         android:id="@+id/nav_view"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="0dp"
         android:background="?android:attr/windowBackground"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
+
+        <ImageButton
+            android:id="@+id/button_remove"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent"
+            android:layout_gravity="start|center_vertical"
+            android:tint="@color/colorBottomNavigationIcon"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button_remove_128x128"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+        <ImageButton
+            android:id="@+id/button_edit"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent"
+            android:layout_gravity="end|center_vertical"
+            android:tint="@color/colorBottomNavigationIcon"
+            android:scaleType="fitCenter"
+            android:src="@drawable/button_edit_128x128"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

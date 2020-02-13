@@ -9,7 +9,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class NoteDataManager
 {
@@ -22,6 +25,10 @@ public class NoteDataManager
 		return instance;
 	}
 	private ArrayList<NoteData> data = new ArrayList<NoteData>();
+	private int sequence; // 새로운 노트 추가시 id값을 주기 위한 변수
+	public int getSequence(){
+		return sequence;
+	}
 	// 노트데이터 전체 반환
 	public ArrayList<NoteData> getNoteList()
 	{
@@ -41,7 +48,7 @@ public class NoteDataManager
 	public void setNote(String id, NoteData d)
 	{
 		for(int i = 0; i < data.size(); i++){
-			if(data.get(i).getId().equals((id))){
+			if(data.get(i).getId().equals(id)){
 				data.set(i,d);
 			}
 		}
@@ -50,14 +57,57 @@ public class NoteDataManager
 	public void addNote(NoteData d){
 		data.add(d);
 	}
+	// 노트데이터 삭제
+	public void removeNote(String id){
+		for(int i = 0; i < data.size(); i++){
+			if(data.get(i).getId().equals(id)){
+				data.remove(i);
+			}
+		}
+	}
+
+	public String getNoteEditDate(NoteData data)
+	{
+		String date ="";
+		try{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			Date nowDate = new Date();
+			Date editDate = sdf.parse(data.getDate());
+			long diffDate = nowDate.getTime() - editDate.getTime();
+
+			Log.d("date", data.getDate()+" >>> " + diffDate);
+
+			long calDateDays = diffDate / (24*60*60*1000);
+			calDateDays = Math.abs(calDateDays);
+			if(calDateDays==0){
+				long calDateHours = diffDate / (60*60*1000);
+				calDateHours = Math.abs(calDateHours);
+				if(calDateHours==0){
+					long calDateMins = diffDate / (60*1000);
+					calDateMins = Math.abs(calDateMins);
+					date = String.valueOf(calDateMins) + " 분전";
+				}else{
+					date = String.valueOf(calDateHours) + " 시간전";
+				}
+			}else{
+				date = String.valueOf(calDateDays) + " 일전";
+			}
+		}catch (ParseException e){
+			e.printStackTrace();
+		}
+		return date;
+	}
+
 	public String getNoteDataString(){
 		try
 		{
+			sequence = 0;
 			JSONObject obj = new JSONObject();
 			JSONArray jArray = new JSONArray();
 			for (int i = 0; i < data.size(); i++)//배열
 			{
 				JSONObject sObject = new JSONObject();
+				sequence = Math.max(sequence, Integer.parseInt(data.get(i).getId()));
 				sObject.put("id", data.get(i).getId());
 				sObject.put("date", data.get(i).getDate());
 				sObject.put("title", data.get(i).getTitle());
@@ -76,7 +126,7 @@ public class NoteDataManager
 
 				jArray.put(sObject);
 			}
-			obj.put("id", "userID");
+			obj.put("sequence", String.valueOf(sequence+1));
 			obj.put("notes", jArray);//배열을 넣음
 			return obj.toString();
 		}catch (JSONException e){
@@ -88,11 +138,10 @@ public class NoteDataManager
 	{
 // String to JSON으로 만들어 노트배열에 담는다
 		try{
-
 			data.clear();
 			JSONObject json = new JSONObject(dataString);
+			sequence = Integer.parseInt(json.getString("sequence"));
 			JSONArray jArray = json.getJSONArray("notes");
-
 			for(int i = 0; i < jArray.length(); i++){
 				JSONObject jNoteObject = new JSONObject(jArray.getString(i));
 				NoteData note = new NoteData();

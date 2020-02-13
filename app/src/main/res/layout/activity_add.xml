@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -23,52 +24,95 @@
             android:scaleType="fitCenter"
             android:src="@drawable/button_back_64x64"/>
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="@string/activity_main"
             android:textSize="24sp"/>
+        <Button
+            android:id="@+id/button_save"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent"
+            android:text="저장"
+            android:textSize="20sp"
+            android:textColor="@color/colorBottomNavigationIcon"
+            android:layout_gravity="end"
+            android:clickable="true"/>
     </android.support.v7.widget.Toolbar>
-
-    <ScrollView
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:orientation="vertical">
-        <LinearLayout
+        android:layout_height="match_parent">
+        <ScrollView
+            android:id="@+id/scroll_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="50dp"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/TextView_Title"
-                android:layout_width="match_parent"
-                android:layout_height="50sp"
-                android:textSize="30sp"
-                android:gravity="center_vertical"
-                android:text="@string/slot_note_title">
-            </TextView>
-            <TextView
-                android:id="@+id/TextView_Content"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="start|top"
-                android:text="@string/slot_note_content">
-            </TextView>
+                android:orientation="vertical">
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/text_edit_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/slot_note_title"
+                        android:textSize="24sp"/>
+                </android.support.design.widget.TextInputLayout>
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/text_edit_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/slot_note_content"
+                        android:background="@android:color/transparent"
+                        android:textSize="24sp"/>
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+        </ScrollView>
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/layout_list_image"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="?android:attr/windowBackground"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/scroll_content">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_list_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffffff"
+                android:scrollbars="horizontal">
+            </android.support.v7.widget.RecyclerView>
         </LinearLayout>
-
-    </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/nav_view"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="0dp"
-        android:background="?android:attr/windowBackground"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-    </LinearLayout>
-
-</android.support.constraint.ConstraintLayout>
+        <LinearLayout
+            android:id="@+id/nav_view"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="?android:attr/windowBackground"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/scroll_content">
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+            <ImageButton
+                android:id="@+id/button_add_image"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:background="@android:color/transparent"
+                android:layout_gravity="end|center_vertical"
+                android:tint="@color/colorBottomNavigationIcon"
+                android:scaleType="fitCenter"
+                android:src="@drawable/button_add_image_256x256"/>
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
+</LinearLayout>

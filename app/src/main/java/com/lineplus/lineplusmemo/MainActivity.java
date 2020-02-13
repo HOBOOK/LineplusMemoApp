@@ -9,10 +9,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.lineplus.lineplusmemo.manager.NoteDataManager;
 import com.lineplus.lineplusmemo.model.NoteData;
+import com.lineplus.lineplusmemo.module.IInternalDataServiceImpl;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements IInternalDataServiceImpl
 {
 	private RecyclerView recyclerView;
 	private RecyclerView.Adapter mAdapter;
@@ -34,12 +34,23 @@ public class MainActivity extends AppCompatActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		loadNoteData();
-		recyclerView = (RecyclerView)findViewById(R.id.note_list_recycler_view);
+
+		recyclerView = (RecyclerView)findViewById(R.id.recycler_view_list_note);
 		recyclerView.setHasFixedSize(true);
-		myDataset = NoteDataManager.getInstance().getNoteList();
 		layoutManager = new LinearLayoutManager(this);
 		recyclerView.setLayoutManager(layoutManager);
+		button_add_note = (FloatingActionButton)findViewById(R.id.button_add_note);
+		button_add_note.setClickable(true);
+		button_add_note.setEnabled(true);
+		button_add_note.setOnClickListener(new ButtonNoteAddClickListener());
+	}
+
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		loadNoteData();
+		myDataset = NoteDataManager.getInstance().getNoteList();
 		mAdapter = new RecyclerViewAdapter(myDataset, MainActivity.this, new View.OnClickListener()
 		{
 			@Override
@@ -55,11 +66,6 @@ public class MainActivity extends AppCompatActivity
 			}
 		});
 		recyclerView.setAdapter(mAdapter);
-
-		button_add_note = (FloatingActionButton)findViewById(R.id.button_add_note);
-		button_add_note.setClickable(true);
-		button_add_note.setEnabled(true);
-		button_add_note.setOnClickListener(new ButtonNoteAddClickListener());
 	}
 
 	@Override
@@ -69,6 +75,7 @@ public class MainActivity extends AppCompatActivity
 		super.onDestroy();
 	}
 
+	@Override
 	public void saveNoteData()
 	{
 		String obj = NoteDataManager.getInstance().getNoteDataString();
@@ -89,6 +96,7 @@ public class MainActivity extends AppCompatActivity
 			e.printStackTrace();
 		}
 	}
+	@Override
 	public void loadNoteData()
 	{
 		// 내부저장소에서 데이터 불러오기
@@ -100,12 +108,6 @@ public class MainActivity extends AppCompatActivity
 			BufferedReader iReader = new BufferedReader(new InputStreamReader((fis)));
 			dataString = iReader.readLine();
 			Log.d("Data","읽는중.. > " + dataString);
-//			while(dataString != null)
-//			{
-//				buffer.append(dataString);
-//				dataString = iReader.readLine();
-//			}
-//			buffer.append("\n");
 			iReader.close();
 		}catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -121,7 +123,6 @@ public class MainActivity extends AppCompatActivity
 		@Override
 		public void onClick(View v){
 			Intent intent = new Intent(MainActivity.this, AddActivity.class);
-			Toast.makeText(getApplicationContext(),"클릭",Toast.LENGTH_SHORT).show();
 			startActivity(intent);
 		}
 	}

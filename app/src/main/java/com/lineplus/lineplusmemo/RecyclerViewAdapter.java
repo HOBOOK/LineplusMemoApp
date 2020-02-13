@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.lineplus.lineplusmemo.manager.NoteDataManager;
 import com.lineplus.lineplusmemo.model.NoteData;
 
 import java.util.ArrayList;
@@ -23,12 +24,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 	public class MyViewHolder extends RecyclerView.ViewHolder {
 		public TextView TextView_Title;
 		public TextView TextView_Content;
+		public TextView TextView_Date;
 		public SimpleDraweeView ImageView_Thumbnail;
 		public View view;
 		public MyViewHolder(View v) {
 			super(v);
 			TextView_Title = v.findViewById(R.id.TextView_Title);
 			TextView_Content = v.findViewById(R.id.TextView_Content);
+			TextView_Date = v.findViewById(R.id.TextView_Date);
 			ImageView_Thumbnail = v.findViewById(R.id.ImageView_Thumbnail);
 			view = v;
 			v.setClickable(true);
@@ -58,6 +61,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 	public void onBindViewHolder(MyViewHolder holder, int position) {
 		holder.TextView_Title.setText(mDataset.get(position).getTitle());
 		holder.TextView_Content.setText(mDataset.get(position).getContent());
+		String date = NoteDataManager.getInstance().getNoteEditDate(mDataset.get(position));
+		holder.TextView_Date.setText(date);
 		try{
 			String path = mDataset.get(position).getImageURL().get(0);
 			Uri uri = Uri.parse(path);

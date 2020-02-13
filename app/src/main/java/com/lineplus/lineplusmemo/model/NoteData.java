@@ -69,6 +69,12 @@ public class NoteData implements Serializable
 		this.imageURL = imageURL;
 	}
 
-
-
+	public void addImage(String url)
+	{
+		this.imageURL.add(url);
+	}
+	public void removeImage(int index)
+	{
+		this.imageURL.remove(index);
+	}
 }

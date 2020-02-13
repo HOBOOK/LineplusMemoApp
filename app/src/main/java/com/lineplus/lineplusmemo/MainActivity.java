@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements IInternalDataServ
 	{
 		super.onStart();
 		loadNoteData();
+		NoteDataManager.getInstance().sortNoteData(0); // 날짜순 정렬
 		myDataset = NoteDataManager.getInstance().getNoteList();
 		mAdapter = new RecyclerViewAdapter(myDataset, MainActivity.this, new View.OnClickListener()
 		{

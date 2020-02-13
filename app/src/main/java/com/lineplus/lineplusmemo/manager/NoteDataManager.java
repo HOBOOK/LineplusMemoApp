@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 public class NoteDataManager
@@ -28,6 +30,31 @@ public class NoteDataManager
 	private int sequence; // 새로운 노트 추가시 id값을 주기 위한 변수
 	public int getSequence(){
 		return sequence;
+	}
+
+	// 정렬 0:날짜순
+	public void sortNoteData(int sortType){
+		switch (sortType){
+			case 0:
+				Collections.sort(data, new Comparator<NoteData>()
+				{
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					@Override
+					public int compare(NoteData o1, NoteData o2)
+					{
+						long comp = 0;
+						try{
+							comp = sdf.parse(o1.getDate()).getTime()-sdf.parse(o2.getDate()).getTime();
+						}catch (ParseException e){
+							e.printStackTrace();
+						}
+						return -(int)comp;
+					}
+				});
+				break;
+			default:
+				break;
+		}
 	}
 	// 노트데이터 전체 반환
 	public ArrayList<NoteData> getNoteList()

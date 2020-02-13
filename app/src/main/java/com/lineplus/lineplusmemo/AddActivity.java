@@ -2,14 +2,23 @@ package com.lineplus.lineplusmemo;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.AutoTransition;
+import android.transition.ChangeBounds;
+import android.transition.ChangeTransform;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -32,13 +41,20 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 {
 	Intent intent;
 	private NoteData data;
+	private ArrayList<String> imageData;
 	private TextInputEditText text_edit_title;
 	private TextInputEditText text_edit_content;
 	private Button button_save;
 	private ImageButton button_add_image;
+	private ImageButton button_toolbar;
 	private ScrollView container;
 	private LinearLayout layout_add_image;
+
+	// 이미지 선택 뷰
+	private RecyclerView.Adapter mAdapter;
+	private RecyclerView.LayoutManager layoutManager;
 	private RecyclerView recycler_view_list_image;
+
 	private boolean isImageLayoutOn=false;
 
 	@Override
@@ -46,26 +62,42 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add);
+
 		intent = getIntent();
 		data = (NoteData)intent.getSerializableExtra("note");
 
-		ImageButton button_toolbar = (ImageButton)findViewById(R.id.button_toolbar);
+		button_toolbar = (ImageButton)findViewById(R.id.button_toolbar);
 		button_toolbar.setOnClickListener(this);
 		container = (ScrollView)findViewById(R.id.scroll_content);
-		layout_add_image = (LinearLayout)findViewById(R.id.layout_add_image);
+
+		layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
 		recycler_view_list_image = (RecyclerView)findViewById(R.id.recycler_view_list_image);
+		recycler_view_list_image.setHasFixedSize(true);
+		recycler_view_list_image.setLayoutManager(layoutManager);
 		recycler_view_list_image.setVisibility(View.GONE);
+
+		layout_add_image = (LinearLayout)findViewById(R.id.layout_add_image);
 		text_edit_title = (TextInputEditText)findViewById(R.id.text_edit_title);
 		text_edit_content = (TextInputEditText)findViewById(R.id.text_edit_content);
 		button_save = (Button)findViewById(R.id.button_save);
 		button_save.setOnClickListener(this);
 		button_add_image = (ImageButton) findViewById(R.id.button_add_image);
 		button_add_image.setOnClickListener(this);
-
 		if(data!=null){
 			text_edit_title.setText(data.getTitle());
 			text_edit_content.setText(data.getContent());
+			imageData = data.getImageURL();
+		} else {
+			imageData = new ArrayList<String>();
 		}
+	}
+
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		getRecyclerViewImageData();
 	}
 
 	@Override
@@ -87,11 +119,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				break;
 			case R.id.button_add_image:
 				// 키보드창 숨김
-				InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(text_edit_title.getWindowToken(), 0);
-				imm.hideSoftInputFromWindow(text_edit_content.getWindowToken(), 0);
-				text_edit_title.clearFocus();
-				text_edit_content.clearFocus();
+				hideKeyboard();
 				//이미지 추가창이 숨겨져 있을 때
 				isImageLayoutOn = !isImageLayoutOn;
 				// 콘텐트 레이아웃 마진바텀
@@ -99,13 +127,28 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				layoutParams.setMargins(0,0,0,sizeOfImageLayout(isImageLayoutOn));
 				container.setLayoutParams(layoutParams);
 				// 바텀 레이아웃 사이즈
+				ChangeBounds changeBounds = new ChangeBounds();
+				changeBounds.setStartDelay(300);
+				changeBounds.setInterpolator(new AnticipateOvershootInterpolator());
+				changeBounds.setDuration(1000);
+				TransitionManager.beginDelayedTransition(layout_add_image,changeBounds);
 				layout_add_image.getLayoutParams().height = sizeOfImageLayout(isImageLayoutOn);
-				if(isImageLayoutOn){
-					recycler_view_list_image.setVisibility(View.VISIBLE);
-				}else{
-					recycler_view_list_image.setVisibility(View.GONE);
-				}
 
+				ChangeTransform changeTransform = new ChangeTransform();
+				changeTransform.setStartDelay(1000);
+				TransitionManager.beginDelayedTransition(recycler_view_list_image, changeTransform);
+				recycler_view_list_image.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						TransitionManager.beginDelayedTransition(recycler_view_list_image, new AutoTransition().setStartDelay(1000));
+						if(isImageLayoutOn){
+							recycler_view_list_image.setVisibility(View.VISIBLE);
+						}else
+						{
+							recycler_view_list_image.setVisibility(View.GONE);
+						}
+					}
+				}, 1000);
 				// 버튼 딜레이
 				((ImageButton) findViewById(R.id.button_add_image)).setEnabled(false);
 				new Handler().postDelayed(new Runnable() {
@@ -127,6 +170,94 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		float dp = this.getResources().getDisplayMetrics().density;
 		return on ? (int)(150 * dp) : (int)(50 * dp);
 	}
+
+	void hideKeyboard()
+	{
+		text_edit_title.clearFocus();
+		text_edit_content.clearFocus();
+		InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(text_edit_title.getWindowToken(), 0);
+		imm.hideSoftInputFromWindow(text_edit_content.getWindowToken(), 0);
+	}
+
+	// 이미지 데이터를 리사이클러뷰에 연결
+	void getRecyclerViewImageData(){
+		mAdapter = new RecyclerViewImageAdapter(imageData, AddActivity.this, new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				int position = v.getTag() != null ? (int)v.getTag() : 0;
+				// 이미지 이벤트 추가
+			}
+		});
+		recycler_view_list_image.setAdapter(mAdapter);
+
+		ImageButton button_test = (ImageButton) findViewById(R.id.button_test);
+		button_test.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				getImageFromAlbum();
+			}
+		});
+	}
+
+	// 앨범에서 이미지 가져오기
+	private static final int PICK_FROM_ALBUM = 1;
+	void getImageFromAlbum()
+	{
+		Intent intent = new Intent(Intent.ACTION_PICK);
+		intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+		startActivityForResult(intent, PICK_FROM_ALBUM);
+	}
+
+	// 촬영한 사진에서 가져오기
+	void getImageFromCamera()
+	{
+
+	}
+
+	// 외부 이미지 URL에서 이미지 가져오기
+	void getImageFromURL()
+	{
+
+	}
+
+	// 사진 가져오기 콜백
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Cursor cursor = null;
+		String path = "";
+		if (requestCode == PICK_FROM_ALBUM) {
+			if(resultCode == RESULT_OK){
+				try {
+					Uri photoUri = data.getData();
+					String[] proj = { MediaStore.Images.Media.DATA };
+					assert photoUri != null;
+					cursor = getContentResolver().query(photoUri, proj, null, null, null);
+					assert cursor != null;
+					int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+					cursor.moveToFirst();
+					path = cursor.getString(column_index);
+				} finally {
+					if (cursor != null) {
+						cursor.close();
+					}
+				}
+				addImage(path);
+			}
+		}
+	}
+
+	void addImage(String path)
+	{
+		imageData.add(path);
+		getImageFromAlbum();
+	}
+
+
 	@Override
 	public void saveNoteData()
 	{
@@ -135,14 +266,14 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 			data.setDate(sdf.format(new Date()));
 			data.setTitle(text_edit_title.getText().toString());
 			data.setContent(text_edit_content.getText().toString());
+			data.setImageURL(imageData);
 			NoteDataManager.getInstance().setNote(data.getId(),data);
 		}else{
 			String id = String.valueOf(NoteDataManager.getInstance().getSequence());
 			String date = sdf.format(new Date());
 			String title = text_edit_title.getText().toString();
 			String content = text_edit_content.getText().toString();
-			ArrayList<String> imageURL = new ArrayList<String>();
-			data = new NoteData(id,date,title,content,imageURL);
+			data = new NoteData(id,date,title,content,imageData);
 			NoteDataManager.getInstance().addNote(data);
 		}
 		String obj = NoteDataManager.getInstance().getNoteDataString();

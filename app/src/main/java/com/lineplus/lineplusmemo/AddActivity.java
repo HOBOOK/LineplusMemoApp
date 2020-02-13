@@ -1,14 +1,22 @@
 package com.lineplus.lineplusmemo;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,11 +32,13 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.lineplus.lineplusmemo.manager.NoteDataManager;
 import com.lineplus.lineplusmemo.model.NoteData;
 import com.lineplus.lineplusmemo.module.IInternalDataServiceImpl;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -178,7 +188,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(text_edit_title.getWindowToken(), 0);
 		imm.hideSoftInputFromWindow(text_edit_content.getWindowToken(), 0);
-	}
+}
 
 	// 이미지 데이터를 리사이클러뷰에 연결
 	void getRecyclerViewImageData(){
@@ -199,24 +209,85 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 			@Override
 			public void onClick(View v)
 			{
-				getImageFromAlbum();
+				showTakeImageDialog();
 			}
 		});
 	}
 
+	// 사진 가져오기 위한 퍼미션 체크
+	private void checkPermission()
+	{
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+				Log.d("Permission", "권한 설정 완료");
+			} else {
+				Log.d("Permission", "권한 설정 요청");
+				ActivityCompat.requestPermissions(AddActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+			}
+		}
+	}
+
+	// 사진 가져오는 방법 선택
+	private static final int TAKE_FROM_GALLERY = 1;
+	private static final int TAKE_FROM_CAMERA = 2;
+	private static final int TAKE_FROM_URI = 3;
+	private void showTakeImageDialog(){
+		checkPermission();
+		String[] takeImageTypes = {"앨범에서 가져오기", "카메라에서 가져오기", "외부 URL로 가져오기"};
+		AlertDialog.Builder alt_bld = new AlertDialog.Builder(AddActivity.this);
+		alt_bld.setTitle("이미지 메모").setIcon(R.drawable.button_add_image_256x256);
+		alt_bld.setSingleChoiceItems(takeImageTypes, -1, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				switch (which)
+				{
+					case 0:
+						getImageFromAlbum();
+						break;
+					case 1:
+						getImageFromCamera();
+						break;
+					case 2:
+						getImageFromURL();
+						break;
+				}
+			}
+		});
+		AlertDialog alert = alt_bld.create();
+		alert.show();
+	}
+
 	// 앨범에서 이미지 가져오기
-	private static final int PICK_FROM_ALBUM = 1;
 	void getImageFromAlbum()
 	{
 		Intent intent = new Intent(Intent.ACTION_PICK);
 		intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
-		startActivityForResult(intent, PICK_FROM_ALBUM);
+		startActivityForResult(intent, TAKE_FROM_GALLERY);
 	}
 
 	// 촬영한 사진에서 가져오기
+	private File tempFile;
 	void getImageFromCamera()
 	{
-
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		try {
+			String timeStamp = new SimpleDateFormat("HHmmss").format(new Date());
+			String imageFileName = "Linememo_" + timeStamp + "_";
+			File storageDir = new File(Environment.getExternalStorageDirectory() + "/LineMemo/");
+			if (!storageDir.exists()) storageDir.mkdirs();
+			tempFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+			if (tempFile != null) {
+				Uri photoUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", tempFile);
+				intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoUri);
+				startActivityForResult(intent, TAKE_FROM_CAMERA);
+			}
+		} catch (IOException e) {
+			Toast.makeText(this, "이미지 처리 중 오류가 발생하였습니다. 다시 시도 해주세요.", Toast.LENGTH_SHORT).show();
+			finish();
+			e.printStackTrace();
+		}
 	}
 
 	// 외부 이미지 URL에서 이미지 가져오기
@@ -230,33 +301,33 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Cursor cursor = null;
 		String path = "";
-		if (requestCode == PICK_FROM_ALBUM) {
+		if (requestCode == TAKE_FROM_GALLERY) {
 			if(resultCode == RESULT_OK){
-				try {
-					Uri photoUri = data.getData();
-					String[] proj = { MediaStore.Images.Media.DATA };
-					assert photoUri != null;
-					cursor = getContentResolver().query(photoUri, proj, null, null, null);
-					assert cursor != null;
-					int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-					cursor.moveToFirst();
-					path = cursor.getString(column_index);
-				} finally {
-					if (cursor != null) {
-						cursor.close();
+				Uri photoUri = data.getData();
+				path = photoUri.toString();
+				addImage(path);
+			}
+		}else if(requestCode == TAKE_FROM_CAMERA){
+			if(resultCode == RESULT_OK){
+				Uri photoUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", tempFile);
+				path = photoUri.toString();
+				addImage(path);
+			}else{
+				if(tempFile != null) {
+					if (tempFile.exists()) {
+						if (tempFile.delete()) {
+							tempFile = null;
+						}
 					}
 				}
-				addImage(path);
 			}
 		}
 	}
-
 	void addImage(String path)
 	{
 		imageData.add(path);
 		getImageFromAlbum();
 	}
-
 
 	@Override
 	public void saveNoteData()

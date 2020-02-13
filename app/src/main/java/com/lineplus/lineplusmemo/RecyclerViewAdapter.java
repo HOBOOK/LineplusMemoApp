@@ -25,7 +25,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 		public TextView TextView_Title;
 		public TextView TextView_Content;
 		public TextView TextView_Date;
-		public SimpleDraweeView ImageView_Thumbnail;
+		public SimpleDraweeView ImageView_Thumbnail; // 외부 라이브러리 사용 Fresco의 SimpleDraweeView
 		public View view;
 		public MyViewHolder(View v) {
 			super(v);

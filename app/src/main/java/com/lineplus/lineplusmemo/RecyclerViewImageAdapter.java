@@ -1,17 +1,15 @@
 package com.lineplus.lineplusmemo;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 
@@ -22,13 +20,11 @@ public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewI
 	private View.OnClickListener onClickListener;
 	private Context context;
 	public class MyViewHolder extends RecyclerView.ViewHolder {
-		public ImageView image_add;
-		public TextView text_path;
+		public SimpleDraweeView image_add; // 외부 라이브러리 사용 Fresco의 SimpleDraweeView
 		public View view;
 		public MyViewHolder(View v) {
 			super(v);
-			image_add = (ImageView)v.findViewById(R.id.image_added);
-			text_path = v.findViewById(R.id.text_path);
+			image_add = (SimpleDraweeView)v.findViewById(R.id.image_added);
 			view = v;
 			v.setClickable(true);
 			v.setEnabled(true);
@@ -55,10 +51,8 @@ public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewI
 	public void onBindViewHolder(MyViewHolder holder, int position) {
 		try{
 			String path = mDataset.get(position);
-			holder.text_path.setText(path);
-			BitmapFactory.Options options = new BitmapFactory.Options();
-			Bitmap originalBm = BitmapFactory.decodeFile(path, options);
-			holder.image_add.setImageBitmap(originalBm);
+			Uri uri = Uri.parse(path);
+			holder.image_add.setImageURI(uri);
 		}
 		catch (Exception e){
 			e.printStackTrace();

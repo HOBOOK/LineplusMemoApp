@@ -3,15 +3,29 @@
     android:layout_height="100dp"
     android:layout_width="100dp"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_marginStart="6dp"
-    android:layout_marginEnd="6dp"
+    xmlns:app="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_marginStart="1dp"
+    android:layout_marginEnd="1dp"
     android:background="@drawable/border_slot_note">
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/image_added"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
-        android:layout_gravity="top">
+        android:layout_gravity="top"
+        fresco:backgroundImage="@drawable/image_able_not_256x256">
     </com.facebook.drawee.view.SimpleDraweeView>
+    <ImageButton
+        android:visibility="gone"
+        android:id="@+id/button_remove_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="5dp"
+        android:layout_marginStart="-40dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/button_minus_256x256"/>
 </LinearLayout>

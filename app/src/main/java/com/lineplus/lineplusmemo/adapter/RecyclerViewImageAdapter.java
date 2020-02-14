@@ -6,10 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.lineplus.lineplusmemo.AddActivity;
 import com.lineplus.lineplusmemo.R;
 
 import java.util.ArrayList;
@@ -23,13 +25,19 @@ public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewI
 	public class MyViewHolder extends RecyclerView.ViewHolder {
 		public SimpleDraweeView image_add; // 외부 라이브러리 사용 Fresco의 SimpleDraweeView
 		public View view;
+		public ImageButton button_remove_image;
 		public MyViewHolder(View v) {
 			super(v);
-			image_add = (SimpleDraweeView)v.findViewById(R.id.image_added);
 			view = v;
-			v.setClickable(true);
-			v.setEnabled(true);
-			v.setOnClickListener(onClickListener);
+			image_add = (SimpleDraweeView)v.findViewById(R.id.image_added);
+			button_remove_image = (ImageButton)v.findViewById(R.id.button_remove_image);
+
+			if(context instanceof AddActivity){
+				button_remove_image.setClickable(true);
+				button_remove_image.setEnabled(true);
+				button_remove_image.setVisibility(View.VISIBLE);
+				button_remove_image.setOnClickListener(onClickListener);
+			}
 		}
 	}
 
@@ -58,11 +66,19 @@ public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewI
 		catch (Exception e){
 			e.printStackTrace();
 		}
-		holder.view.setTag(position);
+		holder.button_remove_image.setTag(position);
+	}
+
+
+	public void removeImage(int position)
+	{
+		mDataset.remove(position);
+		notifyItemRemoved(position);
 	}
 	@Override
 	public int getItemCount() {
 		return mDataset.size();
 	}
+
 
 }

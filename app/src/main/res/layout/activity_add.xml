@@ -54,13 +54,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="150dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:scrollbars="none">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -112,7 +113,7 @@
                     android:layout_gravity="center"
                     android:tint="@color/colorMain"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/button_up_256x256"/>
+                    android:src="@drawable/button_down_256x256"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -129,7 +130,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@color/colorMemoBackground"
-                        android:scrollbars="horizontal">
+                        android:scrollbars="none">
                     </android.support.v7.widget.RecyclerView>
                 </LinearLayout>
                 <ImageButton

@@ -36,9 +36,9 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.lineplus.lineplusmemo.adapter.RecyclerViewImageAdapter;
+import com.lineplus.lineplusmemo.implement.IInternalDataServiceImpl;
 import com.lineplus.lineplusmemo.manager.NoteDataManager;
 import com.lineplus.lineplusmemo.model.NoteData;
-import com.lineplus.lineplusmemo.implement.IInternalDataServiceImpl;
 import com.lineplus.lineplusmemo.module.ValidationCheck;
 
 import java.io.File;
@@ -147,20 +147,23 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				layoutParams.setMargins(0,0,0,sizeOfImageLayout(isImageLayoutOff));
 				container.setLayoutParams(layoutParams);
 				// 바텀 레이아웃 사이즈
+				if(isImageLayoutOff)
+					button_layout_up_down.setImageResource(R.drawable.button_up_256x256);
+				else
+					button_layout_up_down.setImageResource(R.drawable.button_down_256x256);
 				ChangeBounds changeBounds = new ChangeBounds();
-				changeBounds.setStartDelay(300);
+				changeBounds.setStartDelay(200);
 				changeBounds.setInterpolator(new AnticipateOvershootInterpolator());
-				changeBounds.setDuration(1000);
+				changeBounds.setDuration(500);
 				TransitionManager.beginDelayedTransition(layout_add_image,changeBounds);
 				layout_add_image.getLayoutParams().height = sizeOfImageLayout(isImageLayoutOff);
-
 				ChangeTransform changeTransform = new ChangeTransform();
-				changeTransform.setStartDelay(1000);
+				changeTransform.setStartDelay(500);
 				TransitionManager.beginDelayedTransition(recycler_view_list_image, changeTransform);
 				recycler_view_list_image.postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						TransitionManager.beginDelayedTransition(recycler_view_list_image, new AutoTransition().setStartDelay(1000));
+						TransitionManager.beginDelayedTransition(recycler_view_list_image, new AutoTransition().setStartDelay(500));
 						if(isImageLayoutOff){
 							recycler_view_list_image.setVisibility(View.GONE);
 						}else
@@ -168,7 +171,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 							recycler_view_list_image.setVisibility(View.VISIBLE);
 						}
 					}
-				}, 1000);
+				}, 500);
 				// 버튼 딜레이
 				((ImageButton) findViewById(R.id.button_add_image)).setEnabled(false);
 				new Handler().postDelayed(new Runnable() {
@@ -178,7 +181,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 						((ImageButton) findViewById(R.id.button_add_image))
 								.setEnabled(true);
 					}
-				}, 1000);
+				}, 500);
 				break;
 			case R.id.button_add_image:
 				showTakeImageDialog();
@@ -211,11 +214,23 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 			public void onClick(View v)
 			{
 				int position = v.getTag() != null ? (int)v.getTag() : 0;
-				// 이미지 이벤트 추가
+				data.removeImage(position);
+				redrawRemoveImage(position);
 			}
 		});
 		recycler_view_list_image.setAdapter(mAdapter);
+	}
 
+	// 이미지 추가 리드로우 뷰
+	void redrawAddImage()
+	{
+		mAdapter.notifyDataSetChanged();
+	}
+	// 이미지 제거 리드로우 뷰
+	void redrawRemoveImage(int position)
+	{
+		mAdapter.notifyItemRemoved(position);
+		mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
 	}
 
 	// 사진 가져오기 위한 퍼미션 체크
@@ -366,7 +381,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	void addImage(String path)
 	{
 		imageData.add(path);
-		getRecyclerViewImageData();
+		redrawAddImage();
 	}
 
 	@Override

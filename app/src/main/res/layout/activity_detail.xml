@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorMemoBackground">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -28,7 +29,7 @@
             android:gravity="center_vertical"
             android:text="@string/activity_main"
             android:textColor="@color/colorMain"
-            android:textSize="24sp"/>
+            android:textSize="20sp"/>
     </android.support.v7.widget.Toolbar>
 
     <ScrollView
@@ -43,11 +44,21 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
+                android:id="@+id/TextView_Date"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textSize="16sp"
+                android:gravity="center_vertical|end"
+                android:text="@string/slot_note_date"
+                android:textColor="@color/colorMemoDate">
+            </TextView>
+            <TextView
                 android:id="@+id/TextView_Title"
                 android:layout_width="match_parent"
                 android:layout_height="50sp"
                 android:textSize="30sp"
                 android:gravity="center_vertical"
+                android:textColor="@color/colorMemoTitle"
                 android:text="@string/slot_note_title">
             </TextView>
             <TextView
@@ -55,7 +66,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start|top"
-                android:text="@string/slot_note_content">
+                android:text="@string/slot_note_content"
+                android:textColor="@color/colorMemoContent"
+                android:textSize="16sp">
             </TextView>
         </LinearLayout>
 
@@ -65,7 +78,7 @@
         android:id="@+id/nav_view"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="?android:attr/windowBackground"
+        android:background="@color/colorMemoBackground"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

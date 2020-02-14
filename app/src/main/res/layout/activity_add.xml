@@ -5,7 +5,10 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/colorMemoBackground"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -15,31 +18,33 @@
         app:popupTheme="@style/AppTheme"
         app:layout_constraintTop_toTopOf="parent"
         app:contentInsetStart="0dp">
-        <ImageButton
-            android:id="@+id/button_toolbar"
+        <Button
+            android:id="@+id/button_cancel"
             android:layout_width="50dp"
             android:layout_height="30dp"
             android:background="@android:color/transparent"
-            android:tint="@color/colorAccent"
-            android:scaleType="fitCenter"
-            android:src="@drawable/button_back_64x64"/>
+            android:text="@string/result_cancel"
+            android:textSize="18sp"
+            android:textColor="#50000000"
+            android:layout_gravity="start"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
+            android:gravity="center"
+            android:layout_gravity="center"
             android:textColor="@color/colorMain"
-            android:text="@string/activity_main"
-            android:textSize="24sp"/>
+            android:text="@string/activity_add"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
         <Button
             android:id="@+id/button_save"
             android:layout_width="50dp"
             android:layout_height="30dp"
             android:background="@android:color/transparent"
-            android:text="저장"
-            android:textSize="20sp"
+            android:text="@string/result_save"
+            android:textSize="18sp"
             android:textColor="@color/colorBottomNavigationIcon"
-            android:layout_gravity="end"
-            android:clickable="true"/>
+            android:layout_gravity="end"/>
     </android.support.v7.widget.Toolbar>
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -48,7 +53,9 @@
             android:id="@+id/scroll_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="150dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -62,8 +69,12 @@
                         android:id="@+id/text_edit_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/colorMemoTitle"
                         android:hint="@string/slot_note_title"
-                        android:textSize="24sp"/>
+                        android:textSize="30sp"
+                        android:maxLines="1"
+
+                        android:maxLength="24"/>
                 </android.support.design.widget.TextInputLayout>
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -74,14 +85,15 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/slot_note_content"
                         android:background="@android:color/transparent"
-                        android:textSize="24sp"/>
+                        android:textColor="@color/colorMemoContent"
+                        android:textSize="20sp"/>
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
         </ScrollView>
         <LinearLayout
             android:id="@+id/layout_add_image"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="150dp"
             android:background="?android:attr/windowBackground"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@+id/scroll_content">
@@ -90,38 +102,49 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:orientation="horizontal"
+                android:background="@drawable/border_bottom_bar"
                 android:gravity="top">
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
                 <ImageButton
-                    android:id="@+id/button_test"
-                    android:layout_width="50dp"
+                    android:id="@+id/button_layout_up_down"
+                    android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:background="@android:color/transparent"
-                    android:layout_gravity="end|center_vertical"
-                    android:tint="@color/colorBottomNavigationIcon"
+                    android:layout_gravity="center"
+                    android:tint="@color/colorMain"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/button_add_image_256x256"/>
+                    android:src="@drawable/button_up_256x256"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="1dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorMemoBackground">
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycler_view_list_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorMemoBackground"
+                        android:scrollbars="horizontal">
+                    </android.support.v7.widget.RecyclerView>
+                </LinearLayout>
                 <ImageButton
                     android:id="@+id/button_add_image"
                     android:layout_width="50dp"
-                    android:layout_height="30dp"
-                    android:background="@android:color/transparent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:background="@color/colorMemoBackground"
                     android:layout_gravity="end|center_vertical"
+                    android:gravity="end"
                     android:tint="@color/colorBottomNavigationIcon"
                     android:scaleType="fitCenter"
                     android:src="@drawable/button_add_image_256x256"/>
             </LinearLayout>
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view_list_image"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="#ffffff"
-                android:scrollbars="horizontal">
-            </android.support.v7.widget.RecyclerView>
         </LinearLayout>
     </android.support.constraint.ConstraintLayout>
 </LinearLayout>

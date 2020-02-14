@@ -10,9 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.lineplus.lineplusmemo.adapter.RecyclerViewAdapter;
 import com.lineplus.lineplusmemo.manager.NoteDataManager;
 import com.lineplus.lineplusmemo.model.NoteData;
-import com.lineplus.lineplusmemo.module.IInternalDataServiceImpl;
+import com.lineplus.lineplusmemo.implement.IInternalDataServiceImpl;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

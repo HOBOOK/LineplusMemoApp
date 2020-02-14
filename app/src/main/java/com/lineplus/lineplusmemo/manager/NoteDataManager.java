@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
+// 메모 데이터 관리 클래스
 public class NoteDataManager
 {
 	private static NoteDataManager instance = null;
@@ -38,7 +39,7 @@ public class NoteDataManager
 			case 0:
 				Collections.sort(data, new Comparator<NoteData>()
 				{
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					@Override
 					public int compare(NoteData o1, NoteData o2)
 					{
@@ -97,7 +98,7 @@ public class NoteDataManager
 	{
 		String date ="";
 		try{
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date nowDate = new Date();
 			Date editDate = sdf.parse(data.getDate());
 			long diffDate = nowDate.getTime() - editDate.getTime();

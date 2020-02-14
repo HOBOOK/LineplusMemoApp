@@ -26,6 +26,7 @@
                 android:textSize="30sp"
                 android:gravity="center_vertical"
                 android:layout_gravity="start"
+                android:textColor="@color/colorMemoTitle"
                 android:text="@string/slot_note_title">
             </TextView>
             <TextView
@@ -35,7 +36,7 @@
                 android:layout_height="match_parent"
                 android:textSize="12sp"
                 android:gravity="end|center_vertical"
-                android:textColor="#50000000"
+                android:textColor="@color/colorMemoDate"
                 android:layout_gravity="end"
                 android:text="@string/slot_note_date">
             </TextView>
@@ -46,6 +47,7 @@
             android:layout_height="0dp"
             android:layout_weight="0.4"
             android:gravity="center_vertical"
+            android:textColor="@color/colorMemoContent"
             android:text="@string/slot_note_content">
         </TextView>
     </TableLayout>

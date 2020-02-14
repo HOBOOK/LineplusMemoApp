@@ -12,9 +12,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lineplus.lineplusmemo.implement.IInternalDataServiceImpl;
 import com.lineplus.lineplusmemo.manager.NoteDataManager;
 import com.lineplus.lineplusmemo.model.NoteData;
-import com.lineplus.lineplusmemo.module.IInternalDataServiceImpl;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,6 +23,7 @@ import java.io.IOException;
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener, IInternalDataServiceImpl
 {
 	Intent intent;
+	private TextView TextView_Date;
 	private TextView TextView_TItle;
 	private TextView TextView_Content;
 	private ImageButton button_toolbar;
@@ -38,8 +39,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 		intent = getIntent();
 		data = (NoteData)intent.getSerializableExtra("note");
 
+		TextView_Date = (TextView)findViewById(R.id.TextView_Date);
 		TextView_TItle = (TextView)findViewById(R.id.TextView_Title);
 		TextView_Content = (TextView)findViewById(R.id.TextView_Content);
+		TextView_Date.setText(data.getDate());
 		TextView_TItle.setText(data.getTitle());
 		TextView_Content.setText(data.getContent());
 		button_toolbar = (ImageButton)findViewById(R.id.button_toolbar);

@@ -1,4 +1,4 @@
-package com.lineplus.lineplusmemo;
+package com.lineplus.lineplusmemo.adapter;
 
 import android.content.Context;
 import android.net.Uri;
@@ -11,12 +11,13 @@ import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.lineplus.lineplusmemo.R;
 import com.lineplus.lineplusmemo.manager.NoteDataManager;
 import com.lineplus.lineplusmemo.model.NoteData;
 
 import java.util.ArrayList;
 
-
+// MainActivity 메모 리스트 리사이클러뷰 어댑터 클래스
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
 {
 	private ArrayList<NoteData> mDataset;
@@ -59,8 +60,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 	@Override
 	public void onBindViewHolder(MyViewHolder holder, int position) {
-		holder.TextView_Title.setText(mDataset.get(position).getTitle());
-		holder.TextView_Content.setText(mDataset.get(position).getContent());
+		String title = getLimitLengthText(mDataset.get(position).getTitle(),10);
+		String content = getLimitLengthText(mDataset.get(position).getContent(),20);
+		holder.TextView_Title.setText(title);
+		holder.TextView_Content.setText(content);
 		String date = NoteDataManager.getInstance().getNoteEditDate(mDataset.get(position));
 		holder.TextView_Date.setText(date);
 		try{
@@ -77,6 +80,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 	@Override
 	public int getItemCount() {
 		return mDataset.size();
+	}
+
+	// 제한된 글자 수만큼 텍스트 자르기
+	String getLimitLengthText(String text, int size){
+		byte[] titleByte = text.getBytes();
+		if(titleByte.length>size){
+			StringBuilder sb = new StringBuilder();
+			for(int i = 0; i < size; i++){
+				sb.append((char)titleByte[i]);
+			}
+			return sb.toString() + "...";
+		}
+		return text;
 	}
 
 }

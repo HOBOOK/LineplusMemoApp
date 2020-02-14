@@ -1,4 +1,4 @@
-package com.lineplus.lineplusmemo;
+package com.lineplus.lineplusmemo.adapter;
 
 import android.content.Context;
 import android.net.Uri;
@@ -10,10 +10,11 @@ import android.widget.LinearLayout;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.lineplus.lineplusmemo.R;
 
 import java.util.ArrayList;
 
-
+// AddActivity 이미지리스트 리사이클러뷰 어댑터 클래스
 public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewImageAdapter.MyViewHolder>
 {
 	private ArrayList<String> mDataset;

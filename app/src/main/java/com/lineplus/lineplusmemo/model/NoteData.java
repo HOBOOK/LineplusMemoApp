@@ -3,6 +3,7 @@ package com.lineplus.lineplusmemo.model;
 import java.io.Serializable;
 import java.util.*;
 
+// 메모 객체 데이터 클래스
 public class NoteData implements Serializable
 {
 	private String id;

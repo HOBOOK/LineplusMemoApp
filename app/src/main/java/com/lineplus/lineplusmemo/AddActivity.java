@@ -29,14 +29,17 @@ import android.view.View;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.lineplus.lineplusmemo.adapter.RecyclerViewImageAdapter;
 import com.lineplus.lineplusmemo.manager.NoteDataManager;
 import com.lineplus.lineplusmemo.model.NoteData;
-import com.lineplus.lineplusmemo.module.IInternalDataServiceImpl;
+import com.lineplus.lineplusmemo.implement.IInternalDataServiceImpl;
+import com.lineplus.lineplusmemo.module.ValidationCheck;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,8 +58,9 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	private TextInputEditText text_edit_title;
 	private TextInputEditText text_edit_content;
 	private Button button_save;
+	private Button button_cancel;
 	private ImageButton button_add_image;
-	private ImageButton button_toolbar;
+	private ImageButton button_layout_up_down;
 	private ScrollView container;
 	private LinearLayout layout_add_image;
 
@@ -65,7 +69,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	private RecyclerView.LayoutManager layoutManager;
 	private RecyclerView recycler_view_list_image;
 
-	private boolean isImageLayoutOn=false;
+	private boolean isImageLayoutOff=false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -76,8 +80,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		intent = getIntent();
 		data = (NoteData)intent.getSerializableExtra("note");
 
-		button_toolbar = (ImageButton)findViewById(R.id.button_toolbar);
-		button_toolbar.setOnClickListener(this);
+
 		container = (ScrollView)findViewById(R.id.scroll_content);
 
 		layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -85,15 +88,18 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		recycler_view_list_image = (RecyclerView)findViewById(R.id.recycler_view_list_image);
 		recycler_view_list_image.setHasFixedSize(true);
 		recycler_view_list_image.setLayoutManager(layoutManager);
-		recycler_view_list_image.setVisibility(View.GONE);
 
 		layout_add_image = (LinearLayout)findViewById(R.id.layout_add_image);
 		text_edit_title = (TextInputEditText)findViewById(R.id.text_edit_title);
 		text_edit_content = (TextInputEditText)findViewById(R.id.text_edit_content);
 		button_save = (Button)findViewById(R.id.button_save);
 		button_save.setOnClickListener(this);
+		button_cancel = (Button)findViewById(R.id.button_cancel);
+		button_cancel.setOnClickListener(this);
 		button_add_image = (ImageButton) findViewById(R.id.button_add_image);
 		button_add_image.setOnClickListener(this);
+		button_layout_up_down = (ImageButton) findViewById(R.id.button_layout_up_down);
+		button_layout_up_down.setOnClickListener(this);
 		if(data!=null){
 			text_edit_title.setText(data.getTitle());
 			text_edit_content.setText(data.getContent());
@@ -114,12 +120,16 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	public void onClick(View v)
 	{
 		switch (v.getId()){
-			case R.id.button_toolbar:
+			case R.id.button_cancel:
 				Intent intent = new Intent(AddActivity.this, MainActivity.class);
 				startActivity(intent);
 				finish();
 				break;
 			case R.id.button_save:
+				if(!ValidationCheck.getInstance().checkEditableMemo(text_edit_title.getText())){
+					Toast.makeText(getApplicationContext(), getString(R.string.error_edit_title),Toast.LENGTH_LONG).show();
+					return;
+				}
 				saveNoteData();
 				Intent intentToDetail = new Intent(AddActivity.this, DetailActivity.class);
 				Bundle bundle = new Bundle();
@@ -127,14 +137,14 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				intentToDetail.putExtras(bundle);
 				startActivity(intentToDetail);
 				break;
-			case R.id.button_add_image:
+			case R.id.button_layout_up_down:
 				// 키보드창 숨김
 				hideKeyboard();
 				//이미지 추가창이 숨겨져 있을 때
-				isImageLayoutOn = !isImageLayoutOn;
+				isImageLayoutOff = !isImageLayoutOff;
 				// 콘텐트 레이아웃 마진바텀
 				ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) container.getLayoutParams();
-				layoutParams.setMargins(0,0,0,sizeOfImageLayout(isImageLayoutOn));
+				layoutParams.setMargins(0,0,0,sizeOfImageLayout(isImageLayoutOff));
 				container.setLayoutParams(layoutParams);
 				// 바텀 레이아웃 사이즈
 				ChangeBounds changeBounds = new ChangeBounds();
@@ -142,7 +152,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				changeBounds.setInterpolator(new AnticipateOvershootInterpolator());
 				changeBounds.setDuration(1000);
 				TransitionManager.beginDelayedTransition(layout_add_image,changeBounds);
-				layout_add_image.getLayoutParams().height = sizeOfImageLayout(isImageLayoutOn);
+				layout_add_image.getLayoutParams().height = sizeOfImageLayout(isImageLayoutOff);
 
 				ChangeTransform changeTransform = new ChangeTransform();
 				changeTransform.setStartDelay(1000);
@@ -151,11 +161,11 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 					@Override
 					public void run() {
 						TransitionManager.beginDelayedTransition(recycler_view_list_image, new AutoTransition().setStartDelay(1000));
-						if(isImageLayoutOn){
-							recycler_view_list_image.setVisibility(View.VISIBLE);
+						if(isImageLayoutOff){
+							recycler_view_list_image.setVisibility(View.GONE);
 						}else
 						{
-							recycler_view_list_image.setVisibility(View.GONE);
+							recycler_view_list_image.setVisibility(View.VISIBLE);
 						}
 					}
 				}, 1000);
@@ -170,15 +180,18 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 					}
 				}, 1000);
 				break;
+			case R.id.button_add_image:
+				showTakeImageDialog();
+				break;
 			default:
 				break;
 		}
 	}
 
-	int sizeOfImageLayout(boolean on){
+	int sizeOfImageLayout(boolean off){
 
 		float dp = this.getResources().getDisplayMetrics().density;
-		return on ? (int)(150 * dp) : (int)(50 * dp);
+		return off ? (int)(50 * dp) : (int)(150 * dp);
 	}
 
 	void hideKeyboard()
@@ -203,15 +216,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		});
 		recycler_view_list_image.setAdapter(mAdapter);
 
-		ImageButton button_test = (ImageButton) findViewById(R.id.button_test);
-		button_test.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				showTakeImageDialog();
-			}
-		});
 	}
 
 	// 사진 가져오기 위한 퍼미션 체크
@@ -228,14 +232,16 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	}
 
 	// 사진 가져오는 방법 선택
+	private File tempFile;
+	private AlertDialog dialog_alert_take_image;
 	private static final int TAKE_FROM_GALLERY = 1;
 	private static final int TAKE_FROM_CAMERA = 2;
-	private static final int TAKE_FROM_URI = 3;
+	private static final int TAKE_FROM_URL = 3;
 	private void showTakeImageDialog(){
 		checkPermission();
-		String[] takeImageTypes = {"앨범에서 가져오기", "카메라에서 가져오기", "외부 URL로 가져오기"};
+		String[] takeImageTypes = {"앨범에서 가져오기", "카메라에서 가져오기", "URL 주소로 가져오기"};
 		AlertDialog.Builder alt_bld = new AlertDialog.Builder(AddActivity.this);
-		alt_bld.setTitle("이미지 메모").setIcon(R.drawable.button_add_image_256x256);
+		alt_bld.setTitle(getString(R.string.dialog_title_select_take_image)).setIcon(R.drawable.button_add_image_256x256);
 		alt_bld.setSingleChoiceItems(takeImageTypes, -1, new DialogInterface.OnClickListener()
 		{
 			@Override
@@ -253,10 +259,11 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 						getImageFromURL();
 						break;
 				}
+				dialog_alert_take_image.dismiss();
 			}
 		});
-		AlertDialog alert = alt_bld.create();
-		alert.show();
+		dialog_alert_take_image = alt_bld.create();
+		dialog_alert_take_image.show();
 	}
 
 	// 앨범에서 이미지 가져오기
@@ -268,7 +275,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	}
 
 	// 촬영한 사진에서 가져오기
-	private File tempFile;
 	void getImageFromCamera()
 	{
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -293,7 +299,36 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	// 외부 이미지 URL에서 이미지 가져오기
 	void getImageFromURL()
 	{
-
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		final EditText editText_url = new EditText(this);
+		builder.setTitle(getString(R.string.dialog_title_get_url));
+		builder.setView(editText_url);
+		builder.setPositiveButton(getString(R.string.result_save), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				//이미지 유효성 체크
+				String url = editText_url.getText().toString();
+				boolean validation = ValidationCheck.getInstance().checkImageURL(url);
+				if(validation){
+					addImage(url);
+				}else{
+					Toast.makeText(getApplicationContext(),getString(R.string.error_url_image), Toast.LENGTH_LONG).show();
+					Log.e("validation", "유효하지 않은 주소 : " + url);
+				}
+			}
+		});
+		builder.setNegativeButton(getString(R.string.result_cancel), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.cancel();
+			}
+		});
+		AlertDialog alert = builder.create();
+		alert.show();
 	}
 
 	// 사진 가져오기 콜백
@@ -301,38 +336,43 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Cursor cursor = null;
 		String path = "";
-		if (requestCode == TAKE_FROM_GALLERY) {
-			if(resultCode == RESULT_OK){
-				Uri photoUri = data.getData();
-				path = photoUri.toString();
-				addImage(path);
-			}
-		}else if(requestCode == TAKE_FROM_CAMERA){
-			if(resultCode == RESULT_OK){
-				Uri photoUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", tempFile);
-				path = photoUri.toString();
-				addImage(path);
-			}else{
-				if(tempFile != null) {
-					if (tempFile.exists()) {
-						if (tempFile.delete()) {
-							tempFile = null;
+		switch (requestCode){
+			case TAKE_FROM_GALLERY:
+				if(resultCode == RESULT_OK){
+					Uri photoUri = data.getData();
+					path = photoUri.toString();
+					addImage(path);
+				}
+				break;
+			case TAKE_FROM_CAMERA:
+				if(resultCode == RESULT_OK){
+					Uri photoUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", tempFile);
+					path = photoUri.toString();
+					addImage(path);
+				}else{
+					if(tempFile != null) {
+						if (tempFile.exists()) {
+							if (tempFile.delete()) {
+								tempFile = null;
+							}
 						}
 					}
 				}
-			}
+				break;
+			default:
+				break;
 		}
 	}
 	void addImage(String path)
 	{
 		imageData.add(path);
-		getImageFromAlbum();
+		getRecyclerViewImageData();
 	}
 
 	@Override
 	public void saveNoteData()
 	{
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 		if(data!=null){
 			data.setDate(sdf.format(new Date()));
 			data.setTitle(text_edit_title.getText().toString());

@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -214,23 +215,25 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 			public void onClick(View v)
 			{
 				int position = v.getTag() != null ? (int)v.getTag() : 0;
-				data.removeImage(position);
-				redrawRemoveImage(position);
+				removeRecyclerViewItem(position);
 			}
 		});
 		recycler_view_list_image.setAdapter(mAdapter);
 	}
 
 	// 이미지 추가 리드로우 뷰
-	void redrawAddImage()
+	void addRecyclerViewItem(String path)
 	{
-		mAdapter.notifyDataSetChanged();
+		imageData.add(path);
+		int position = mAdapter.getItemCount();
+		mAdapter.notifyItemInserted(position);
 	}
 	// 이미지 제거 리드로우 뷰
-	void redrawRemoveImage(int position)
+	void removeRecyclerViewItem(int position)
 	{
+		imageData.remove(position);
 		mAdapter.notifyItemRemoved(position);
-		mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
+		mAdapter.notifyItemRangeChanged(position, imageData.size());
 	}
 
 	// 사진 가져오기 위한 퍼미션 체크
@@ -285,7 +288,8 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	void getImageFromAlbum()
 	{
 		Intent intent = new Intent(Intent.ACTION_PICK);
-		intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+		intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		intent.setType("image/*");
 		startActivityForResult(intent, TAKE_FROM_GALLERY);
 	}
 
@@ -295,7 +299,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		try {
 			String timeStamp = new SimpleDateFormat("HHmmss").format(new Date());
-			String imageFileName = "Linememo_" + timeStamp + "_";
+			String imageFileName = getString(R.string.app_name)+"_" + timeStamp + "_";
 			File storageDir = new File(Environment.getExternalStorageDirectory() + "/LineMemo/");
 			if (!storageDir.exists()) storageDir.mkdirs();
 			tempFile = File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -327,7 +331,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				String url = editText_url.getText().toString();
 				boolean validation = ValidationCheck.getInstance().checkImageURL(url);
 				if(validation){
-					addImage(url);
+					addRecyclerViewItem(url);
 				}else{
 					Toast.makeText(getApplicationContext(),getString(R.string.error_url_image), Toast.LENGTH_LONG).show();
 					Log.e("validation", "유효하지 않은 주소 : " + url);
@@ -349,21 +353,31 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 	// 사진 가져오기 콜백
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Cursor cursor = null;
 		String path = "";
 		switch (requestCode){
 			case TAKE_FROM_GALLERY:
 				if(resultCode == RESULT_OK){
 					Uri photoUri = data.getData();
-					path = photoUri.toString();
-					addImage(path);
+					String[] proj = {MediaStore.Images.Media.DATA};
+					CursorLoader cursorLoader = new CursorLoader(
+							AddActivity.this,
+							photoUri, proj, null, null, null);
+					Cursor cursor = cursorLoader.loadInBackground();
+					if(cursor != null)
+					{
+						int column_index =
+								cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+						cursor.moveToFirst();
+						path = "file://"+cursor.getString(column_index);
+						addRecyclerViewItem(path);
+					}
 				}
 				break;
 			case TAKE_FROM_CAMERA:
 				if(resultCode == RESULT_OK){
 					Uri photoUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", tempFile);
 					path = photoUri.toString();
-					addImage(path);
+					addRecyclerViewItem(path);
 				}else{
 					if(tempFile != null) {
 						if (tempFile.exists()) {
@@ -378,12 +392,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				break;
 		}
 	}
-	void addImage(String path)
-	{
-		imageData.add(path);
-		redrawAddImage();
-	}
-
 	@Override
 	public void saveNoteData()
 	{

@@ -68,13 +68,6 @@ public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewI
 		}
 		holder.button_remove_image.setTag(position);
 	}
-
-
-	public void removeImage(int position)
-	{
-		mDataset.remove(position);
-		notifyItemRemoved(position);
-	}
 	@Override
 	public int getItemCount() {
 		return mDataset.size();

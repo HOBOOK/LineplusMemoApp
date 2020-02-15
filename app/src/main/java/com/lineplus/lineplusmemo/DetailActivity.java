@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.lineplus.lineplusmemo.adapter.RecyclerViewImageAdapter;
 import com.lineplus.lineplusmemo.implement.IInternalDataServiceImpl;
@@ -42,6 +41,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 	private RecyclerView recycler_view_list_image;
 
 	private NoteData data;
+
+	//region 앱 생명 주기 함수
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -79,21 +80,26 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 		}
 
 	}
+	//endregion
+
+	//region 이벤트 리스너
 	@Override
 	public void onClick(View v)
 	{
 		switch (v.getId()){
+			// 툴바 뒤로가기 버튼
 			case R.id.button_toolbar:
 				Intent intent = new Intent(DetailActivity.this, MainActivity.class);
 				startActivity(intent);
 				finish();
 				break;
+			// 삭제 버튼
 			case R.id.button_remove:
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-				alertDialogBuilder.setTitle("메모 삭제");
-				alertDialogBuilder.setMessage("메모를 삭제하시겠습니까?");
+				alertDialogBuilder.setTitle(getString(R.string.dialog_title_delete_note));
+				alertDialogBuilder.setMessage(getString(R.string.dialog_alert_delete_note));
 				alertDialogBuilder.setCancelable(true);
-				alertDialogBuilder.setPositiveButton("예", new DialogInterface.OnClickListener()
+				alertDialogBuilder.setPositiveButton(getString(R.string.result_yes), new DialogInterface.OnClickListener()
 						{
 							@Override
 							public void onClick(DialogInterface dialog, int which)
@@ -105,7 +111,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 								finish();
 							}
 						});
-				alertDialogBuilder.setNegativeButton("아니오", new DialogInterface.OnClickListener()
+				alertDialogBuilder.setNegativeButton(getString(R.string.result_no), new DialogInterface.OnClickListener()
 						{
 							@Override
 							public void onClick(DialogInterface dialog, int which)
@@ -116,8 +122,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 				AlertDialog alertDialog = alertDialogBuilder.create();
 				alertDialog.show();
 				break;
+			// 수정 버튼
 			case R.id.button_edit:
-				Toast.makeText(this,"수정",Toast.LENGTH_SHORT);
 				Intent intentToAdd = new Intent(DetailActivity.this, AddActivity.class);
 				Bundle bundle = new Bundle();
 				bundle.putSerializable("note",data);
@@ -146,6 +152,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 		recycler_view_list_image.setAdapter(mAdapter);
 	}
 
+	//endregion
+
+	//region 데이터 입출력 관리 함수
 	@Override
 	public void saveNoteData()
 	{
@@ -173,4 +182,5 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 	{
 
 	}
+	//endregion
 }

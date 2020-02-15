@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-// 메모 데이터 관리 클래스
+// 메모 데이터 관리 클래스 싱글톤 패턴
 public class NoteDataManager
 {
 	private static NoteDataManager instance = null;
@@ -33,7 +33,7 @@ public class NoteDataManager
 		return sequence;
 	}
 
-	// 정렬 0:날짜순
+	// 데이터 정렬 함수 0:날짜순
 	public void sortNoteData(int sortType){
 		switch (sortType){
 			case 0:
@@ -93,7 +93,7 @@ public class NoteDataManager
 			}
 		}
 	}
-
+	// 현재 시간으로 부터 작성일자를 구하는 함수
 	public String getNoteEditDate(NoteData data)
 	{
 		String date ="";
@@ -125,7 +125,7 @@ public class NoteDataManager
 		}
 		return date;
 	}
-
+	// 데이터 배열을 JSON 형식의 String으로 반환하는 함수
 	public String getNoteDataString(){
 		try
 		{
@@ -162,9 +162,9 @@ public class NoteDataManager
 		}
 		return "";
 	}
+	// JSON 형식의 String을 받아와서 데이터 배열에 담는 함수
 	public void setNoteDataString(String dataString)
 	{
-// String to JSON으로 만들어 노트배열에 담는다
 		try{
 			data.clear();
 			JSONObject json = new JSONObject(dataString);

@@ -72,6 +72,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 
 	private boolean isImageLayoutOff=false;
 
+	//region 앱 생명 주기 함수
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -80,7 +81,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 
 		intent = getIntent();
 		data = (NoteData)intent.getSerializableExtra("note");
-
 
 		container = (ScrollView)findViewById(R.id.scroll_content);
 
@@ -116,16 +116,20 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		super.onStart();
 		getRecyclerViewImageData();
 	}
+	//endregion
 
+	//region 이벤트 리스너
 	@Override
 	public void onClick(View v)
 	{
 		switch (v.getId()){
+			// 취소 버튼
 			case R.id.button_cancel:
 				Intent intent = new Intent(AddActivity.this, MainActivity.class);
 				startActivity(intent);
 				finish();
 				break;
+			// 저장 버튼
 			case R.id.button_save:
 				if(!ValidationCheck.getInstance().checkEditableMemo(text_edit_title.getText())){
 					Toast.makeText(getApplicationContext(), getString(R.string.error_edit_title),Toast.LENGTH_LONG).show();
@@ -139,6 +143,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				startActivity(intentToDetail);
 				finish();
 				break;
+			// 이미지 업로드 레이아웃 창 숨기기,보이기 버튼
 			case R.id.button_layout_up_down:
 				// 키보드창 숨김
 				hideKeyboard();
@@ -185,6 +190,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 					}
 				}, 500);
 				break;
+			// 이미지 추가 버튼
 			case R.id.button_add_image:
 				showTakeImageDialog();
 				break;
@@ -192,13 +198,9 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				break;
 		}
 	}
+	//endregion
 
-	int sizeOfImageLayout(boolean off){
-
-		float dp = this.getResources().getDisplayMetrics().density;
-		return off ? (int)(50 * dp) : (int)(150 * dp);
-	}
-
+	//region 기타 기능 함수
 	void hideKeyboard()
 	{
 		text_edit_title.clearFocus();
@@ -206,7 +208,16 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(text_edit_title.getWindowToken(), 0);
 		imm.hideSoftInputFromWindow(text_edit_content.getWindowToken(), 0);
-}
+	}
+	//endregion
+
+	//region 이미지 기능 함수
+	// 사진 가져오기 위한 변수
+	private File tempFile;
+	private AlertDialog dialog_alert_take_image;
+	private static final int TAKE_FROM_GALLERY = 1; // 갤러리
+	private static final int TAKE_FROM_CAMERA = 2; // 카메라
+	private static final int TAKE_FROM_URL = 3; // URL(Deprecated)
 
 	// 이미지 데이터를 리사이클러뷰에 연결
 	void getRecyclerViewImageData(){
@@ -239,25 +250,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		mAdapter.notifyItemRangeChanged(position, imageData.size());
 	}
 
-	// 사진 가져오기 위한 퍼미션 체크
-	private void checkPermission()
-	{
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-				Log.d("Permission", "권한 설정 완료");
-			} else {
-				Log.d("Permission", "권한 설정 요청");
-				ActivityCompat.requestPermissions(AddActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-			}
-		}
-	}
-
-	// 사진 가져오는 방법 선택
-	private File tempFile;
-	private AlertDialog dialog_alert_take_image;
-	private static final int TAKE_FROM_GALLERY = 1;
-	private static final int TAKE_FROM_CAMERA = 2;
-	private static final int TAKE_FROM_URL = 3;
+	// 사진 가져오기 위한 방법 선택 다이얼로그
 	private void showTakeImageDialog(){
 		checkPermission();
 		String[] takeImageTypes = {"앨범에서 가져오기", "카메라에서 가져오기", "URL 주소로 가져오기"};
@@ -318,7 +311,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 		}
 	}
 
-	// 외부 이미지 URL에서 이미지 가져오기
+	// 외부 이미지 URL 에서 이미지 가져오기
 	void getImageFromURL()
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -395,6 +388,28 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				break;
 		}
 	}
+	// 레이아웃 마진 설정
+	int sizeOfImageLayout(boolean off){
+
+		float dp = this.getResources().getDisplayMetrics().density;
+		return off ? (int)(50 * dp) : (int)(150 * dp);
+	}
+
+	// 사진 가져오기 위한 퍼미션 체크
+	private void checkPermission()
+	{
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+				Log.d("Permission", "권한 설정 완료");
+			} else {
+				Log.d("Permission", "권한 설정 요청");
+				ActivityCompat.requestPermissions(AddActivity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+			}
+		}
+	}
+	//endregion
+
+	//region 데이터 입출력 함수
 	@Override
 	public void saveNoteData()
 	{
@@ -431,10 +446,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 			e.printStackTrace();
 		}
 	}
-
 	@Override
-	public void loadNoteData()
-	{
-
-	}
+	public void loadNoteData() {}
+	//endregion
 }

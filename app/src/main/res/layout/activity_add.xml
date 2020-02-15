@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorMemoTitle"
                         android:hint="@string/slot_note_title"
-                        android:textSize="30sp"
+                        android:textSize="24sp"
                         android:maxLines="1"
 
                         android:maxLength="24"/>
@@ -86,7 +86,9 @@
                         android:hint="@string/slot_note_content"
                         android:background="@android:color/transparent"
                         android:textColor="@color/colorMemoContent"
-                        android:textSize="20sp"/>
+                        android:textSize="18sp"
+                        android:gravity="start"
+                        android:lines="20"/>
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
         </ScrollView>

@@ -6,11 +6,11 @@ import java.util.*;
 // 메모 객체 데이터 클래스
 public class NoteData implements Serializable
 {
-	private String id;
-	private String date;
-	private String title;
-	private String content;
-	private ArrayList<String> imageURL;
+	private String id; // 아이디
+	private String date; // 저장 날짜
+	private String title; // 제목
+	private String content; // 내용
+	private ArrayList<String> imageURL; // 이미지 path 리스트
 	public NoteData(){}
 	public NoteData(String id, String date, String title, String content, ArrayList<String> imageURL){
 		this.id = id;
@@ -68,14 +68,5 @@ public class NoteData implements Serializable
 	public void setImageURL(ArrayList<String> imageURL)
 	{
 		this.imageURL = imageURL;
-	}
-
-	public void addImage(String url)
-	{
-		this.imageURL.add(url);
-	}
-	public void removeImage(int index)
-	{
-		this.imageURL.remove(index);
 	}
 }

@@ -23,6 +23,7 @@ public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewI
 	private ArrayList<String> mDataset;
 	private View.OnClickListener onClickListener;
 	private Context context;
+
 	public class MyViewHolder extends RecyclerView.ViewHolder {
 		public SimpleDraweeView image_add; // 외부 라이브러리 사용 Fresco의 SimpleDraweeView
 		public View view;
@@ -33,6 +34,8 @@ public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewI
 			image_add = (SimpleDraweeView)v.findViewById(R.id.image_added);
 			button_remove_image = (ImageButton)v.findViewById(R.id.button_remove_image);
 
+			// AddActivity : 이미지 제거 버튼 보이기, 삭제 이벤트 추가
+			// DetailActivity : 이미지 제거 버튼 숨기기, 풀스크린 이벤트 추가
 			if(context instanceof AddActivity){
 				button_remove_image.setClickable(true);
 				button_remove_image.setEnabled(true);

@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements IInternalDataServ
 	private RecyclerView.LayoutManager layoutManager;
 	private FloatingActionButton button_add_note;
 	private ArrayList<NoteData> myDataset;
+
+	//region 앱 생명주기 함수
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements IInternalDataServ
 	public void onBackPressed()
 	{
 		second_time = System.currentTimeMillis();
-		Toast.makeText(MainActivity.this, "한번 더 뒤로가기 버튼을 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show();
+		Toast.makeText(MainActivity.this, getString(R.string.toast_alert_exit), Toast.LENGTH_SHORT).show();
 		if(second_time - first_time < 2000){
 			saveNoteData();
 			finishAffinity();
@@ -93,7 +95,9 @@ public class MainActivity extends AppCompatActivity implements IInternalDataServ
 		}
 		first_time = System.currentTimeMillis();
 	}
+	//endregion
 
+	//region 데이터 입출력 함수
 	@Override
 	public void saveNoteData()
 	{
@@ -136,7 +140,9 @@ public class MainActivity extends AppCompatActivity implements IInternalDataServ
 		}
 		NoteDataManager.getInstance().setNoteDataString(dataString);
 	}
+	//endregion
 
+	//region 이벤트 리스너
 	// 새로운 메모 추가 버튼 이벤트 리스너
 	class ButtonNoteAddClickListener implements View.OnClickListener{
 		@Override
@@ -145,4 +151,5 @@ public class MainActivity extends AppCompatActivity implements IInternalDataServ
 			startActivity(intent);
 		}
 	}
+	//endregion
 }

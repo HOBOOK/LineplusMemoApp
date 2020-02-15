@@ -15,6 +15,8 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 	SimpleDraweeView image_select;
 	ImageButton button_close;
 	boolean isFullScreen;
+
+	//region 앱 생명 주기 함수
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -34,15 +36,19 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 		button_close.setOnClickListener(this);
 		button_close.setVisibility(View.GONE);
 	}
+	//endregion
 
+	//region 이벤트 리스너
 	@Override
 	public void onClick(View v)
 	{
 		switch (v.getId())
 		{
+			// 액티비티 종료 버튼
 			case R.id.button_close:
 				finish();
 				break;
+			// 이미지 선택 버튼
 			case R.id.image_select:
 				isFullScreen = !isFullScreen;
 				if(isFullScreen){
@@ -59,4 +65,5 @@ public class ImageActivity extends AppCompatActivity implements View.OnClickList
 				break;
 		}
 	}
+	//endregion
 }

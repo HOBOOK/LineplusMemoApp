@@ -3,7 +3,6 @@
     android:layout_height="100dp"
     android:layout_width="100dp"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_marginStart="1dp"
     android:layout_marginEnd="1dp"
@@ -25,8 +24,6 @@
         android:padding="5dp"
         android:layout_marginStart="-40dp"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:scaleType="fitCenter"
         android:src="@drawable/button_minus_256x256"/>
 </LinearLayout>

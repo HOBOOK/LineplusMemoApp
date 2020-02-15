@@ -60,7 +60,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 	@Override
 	public void onBindViewHolder(MyViewHolder holder, int position) {
-		String title = getLimitLengthText(mDataset.get(position).getTitle(),10);
+		String title = getLimitLengthText(mDataset.get(position).getTitle(),12);
 		String content = getLimitLengthText(mDataset.get(position).getContent(),20);
 		holder.TextView_Title.setText(title);
 		holder.TextView_Content.setText(content);
@@ -83,16 +83,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 	}
 
 	// 제한된 글자 수만큼 텍스트 자르기
-	String getLimitLengthText(String text, int size){
+	private String getLimitLengthText(String text, int size)
+	{
 		byte[] titleByte = text.getBytes();
 		if(titleByte.length>size){
 			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < size; i++){
-				sb.append((char)titleByte[i]);
+			int i = 0;
+			int byteSize = 0;
+			while(byteSize<size){
+				sb.append(text.charAt(i));
+				byteSize += Math.min(String.valueOf(text.charAt(i)).getBytes().length,2);
+				i++;
 			}
-			return sb.toString() + "...";
+			return sb.toString() + "..";
 		}
 		return text;
 	}
-
 }

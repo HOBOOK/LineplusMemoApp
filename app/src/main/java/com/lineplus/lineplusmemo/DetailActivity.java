@@ -123,6 +123,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 				bundle.putSerializable("note",data);
 				intentToAdd.putExtras(bundle);
 				startActivity(intentToAdd);
+				finish();
 				break;
 			default:
 				break;
@@ -137,7 +138,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 			public void onClick(View v)
 			{
 				int position = v.getTag() != null ? (int)v.getTag() : 0;
-				// 이미지 이벤트 추가
+				Intent imageIntent = new Intent(DetailActivity.this, ImageActivity.class);
+				imageIntent.putExtra("imageURL", data.getImageURL().get(position));
+				startActivity(imageIntent);
 			}
 		});
 		recycler_view_list_image.setAdapter(mAdapter);

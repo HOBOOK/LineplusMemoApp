@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.lineplus.lineplusmemo.AddActivity;
+import com.lineplus.lineplusmemo.DetailActivity;
 import com.lineplus.lineplusmemo.R;
 
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewI
 				button_remove_image.setEnabled(true);
 				button_remove_image.setVisibility(View.VISIBLE);
 				button_remove_image.setOnClickListener(onClickListener);
+			}else if(context instanceof DetailActivity){
+				image_add.setOnClickListener(onClickListener);
 			}
 		}
 	}
@@ -67,6 +70,7 @@ public class RecyclerViewImageAdapter extends RecyclerView.Adapter<RecyclerViewI
 			e.printStackTrace();
 		}
 		holder.button_remove_image.setTag(position);
+		holder.image_add.setTag(position);
 	}
 	@Override
 	public int getItemCount() {

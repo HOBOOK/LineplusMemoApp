@@ -12,9 +12,10 @@
         android:id="@+id/image_added"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="5dp"
         android:layout_gravity="top"
-        fresco:backgroundImage="@drawable/image_able_not_256x256">
+        android:clickable="true"
+        android:focusable="true"
+        fresco:backgroundImage="@drawable/image_able_not_800x800">
     </com.facebook.drawee.view.SimpleDraweeView>
     <ImageButton
         android:visibility="gone"

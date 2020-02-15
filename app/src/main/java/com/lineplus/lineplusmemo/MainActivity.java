@@ -9,11 +9,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.lineplus.lineplusmemo.adapter.RecyclerViewAdapter;
+import com.lineplus.lineplusmemo.implement.IInternalDataServiceImpl;
 import com.lineplus.lineplusmemo.manager.NoteDataManager;
 import com.lineplus.lineplusmemo.model.NoteData;
-import com.lineplus.lineplusmemo.implement.IInternalDataServiceImpl;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -75,6 +76,22 @@ public class MainActivity extends AppCompatActivity implements IInternalDataServ
 	{
 		saveNoteData();
 		super.onDestroy();
+	}
+
+	long first_time;
+	long second_time;
+	@Override
+	public void onBackPressed()
+	{
+		second_time = System.currentTimeMillis();
+		Toast.makeText(MainActivity.this, "한번 더 뒤로가기 버튼을 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show();
+		if(second_time - first_time < 2000){
+			saveNoteData();
+			finishAffinity();
+			System.runFinalization();
+			System.exit(0);
+		}
+		first_time = System.currentTimeMillis();
 	}
 
 	@Override

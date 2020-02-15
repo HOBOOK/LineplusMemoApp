@@ -137,6 +137,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 				bundle.putSerializable("note",data);
 				intentToDetail.putExtras(bundle);
 				startActivity(intentToDetail);
+				finish();
 				break;
 			case R.id.button_layout_up_down:
 				// 키보드창 숨김
@@ -215,7 +216,9 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 			public void onClick(View v)
 			{
 				int position = v.getTag() != null ? (int)v.getTag() : 0;
-				removeRecyclerViewItem(position);
+				if(v.getId() == R.id.button_remove_image){
+					removeRecyclerViewItem(position);
+				}
 			}
 		});
 		recycler_view_list_image.setAdapter(mAdapter);
